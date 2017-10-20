@@ -3,22 +3,22 @@
  */
 
 
-var webpack             = require('webpack');
-var ExtractTextPlugin   = require('extract-text-webpack-plugin');
-var HtmlWebpackPlugin   = require('html-webpack-plugin');
+var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // 环境变量配置，dev / online
-var WEBPACK_ENV         = process.env.WEBPACK_ENV || 'dev';
+var WEBPACK_ENV = process.env.WEBPACK_ENV || 'dev';
 
 //获取html-webpack-plugin参数的方法 //
-var getHtmlConfig = function(name, title){
+var getHtmlConfig = function (name, title) {
     return {
-        template    : './src/view/' + name + '.html',
-        filename    : 'view/' + name + '.html',
-        title       : title,
-        inject      : true,
-        hash        : true,
-        chunks      : ['common', name]
+        template: './src/view/' + name + '.html',
+        filename: 'view/' + name + '.html',
+        title: title,
+        inject: true,
+        hash: true,
+        chunks: ['common', name]
     };
 };
 
@@ -31,7 +31,7 @@ var config = {
     },
     output: {
         path: './dist',
-         publicPath : '/dist',
+        publicPath: '/dist',
         filename: 'js/[name].js'
     },
     externals: {
@@ -39,34 +39,37 @@ var config = {
     },
     module: {
         loaders: [
-            { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader","css-loader") },//
-            { test: /\.(gif|png|jpg|woff|svg|eot|ttf)\??.*$/, loader: 'url-loader?limit=100&name=resource/[name].[ext]' },//´¦ÀíÍ¼Æ¬
+            {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},//
+            {test: /\.(gif|png|jpg|woff|svg|eot|ttf)\??.*$/, loader: 'url-loader?limit=100&name=resource/[name].[ext]'},
             //{ test: /\.string$/, loader: 'html-loader'}
         ]
     },
-    //devServer: {
-    //    contentBase: "./",       //±¾µØ·þÎñÆ÷Ëù¼ÓÔØµÄÒ³ÃæËùÔÚµÄÄ¿Â¼
-    //    historyApiFallback: true,       //²»Ìø×ª
-    //    port: 8086,
-    //    inline: true,    //ÊµÊ±Ë¢ÐÂ
-    //    hot: true
-    //},
+    resolve: {
+        //配置别名
+        alias: {
+            node_modules    : __dirname + '/node_modules',
+            util: __dirname + '/src/util',
+            page: __dirname + '/src/page',
+            service: __dirname + '/src/service',
+            image: __dirname + '/src/image'
+        }
+    },
     plugins: [
-        // ¶ÀÁ¢Í¨ÓÃÄ£¿éµ½js/base.js
+        // 独立通用模块到js/base.js
         new webpack.optimize.CommonsChunkPlugin({
-            name : 'common',
-            filename : 'js/base.js'
+            name: 'common',
+            filename: 'js/base.js'
         }),
-        // °Ñcssµ¥¶À´ò°üµ½ÎÄ¼þÀï
+        // 把css单独打包到文件里
         new ExtractTextPlugin("css/[name].css"),
-        // htmlÄ£°åµÄ´¦Àí
-        new HtmlWebpackPlugin(getHtmlConfig('index', 'Ê×Ò³')),
-        new HtmlWebpackPlugin(getHtmlConfig('login', 'Ê×Ò³')),
+        // html模板的处理
+        new HtmlWebpackPlugin(getHtmlConfig('index', '首页')),
+        new HtmlWebpackPlugin(getHtmlConfig('login', '登录')),
     ]
 };
 
 
-if('dev' === WEBPACK_ENV){
+if ('dev' === WEBPACK_ENV) {
     config.entry.common.push('webpack-dev-server/client?http://localhost:8088/');
 }
 module.exports = config
